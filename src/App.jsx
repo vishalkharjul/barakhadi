@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import VowelGrid from './components/VowelGrid';
+import TracingCanvas from './components/TracingCanvas';
 
 function App() {
   const [selectedVowel, setSelectedVowel] = useState(null);
@@ -11,12 +12,12 @@ function App() {
       </h1>
 
       {selectedVowel ? (
-        <div className="text-center mt-10">
-          <p className="text-8xl">{selectedVowel.letter}</p>
-          <p className="text-xl mt-4 text-gray-600">Tracing screen coming soon!</p>
+        <div className="text-center mt-4">
+          <p className="text-2xl text-gray-700">Trace: {selectedVowel.letter}</p>
+          <TracingCanvas />
           <button
             onClick={() => setSelectedVowel(null)}
-            className="mt-6 bg-purple-500 text-white px-6 py-3 rounded-xl text-lg"
+            className="mt-4 bg-purple-500 text-white px-6 py-3 rounded-xl text-lg"
           >
             ← Back
           </button>
