@@ -28,11 +28,12 @@ function TracingCanvas({ vowel }) {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    canvas.width = 350;
-    canvas.height = 350;
+    const size = Math.min(window.innerWidth - 72, 350);
+    canvas.width = size;
+    canvas.height = size;
 
     async function setup() {
-      const { path, strokeWidth } = await getVowelPath(vowel.letter, 350);
+      const { path, strokeWidth } = await getVowelPath(vowel.letter, size);
       guidePathRef.current = path;
       strokeWidthRef.current = strokeWidth;
 
@@ -104,26 +105,31 @@ function TracingCanvas({ vowel }) {
   };
 
   return (
-    <div>
-      <canvas
-        ref={canvasRef}
-        onMouseDown={startDrawing}
-        onMouseMove={draw}
-        onMouseUp={stopDrawing}
-        onMouseLeave={stopDrawing}
-        onTouchStart={startDrawing}
-        onTouchMove={draw}
-        onTouchEnd={stopDrawing}
-        className="bg-white rounded-2xl shadow-md mx-auto block mt-6 touch-none"
-      />
+    <div className="relative">
+      <div className="bg-white rounded-2xl shadow-lg p-3 mx-auto mt-4
+                      border-4 border-purple-200" style={{ width: 'fit-content' }}>
+        <canvas
+          ref={canvasRef}
+          onMouseDown={startDrawing}
+          onMouseMove={draw}
+          onMouseUp={stopDrawing}
+          onMouseLeave={stopDrawing}
+          onTouchStart={startDrawing}
+          onTouchMove={draw}
+          onTouchEnd={stopDrawing}
+          className="rounded-xl touch-none block"
+        />
+      </div>
       <button
         onClick={handleClear}
-        className="mt-4 bg-gray-400 text-white px-6 py-3 rounded-xl text-lg"
+        className="mt-3 bg-red-400 text-white px-5 py-2 rounded-xl text-base
+                   active:scale-95 transition-all"
       >
         Clear
       </button>
     </div>
   );
+
 }
 
 export default TracingCanvas;
