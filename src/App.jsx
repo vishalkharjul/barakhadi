@@ -32,13 +32,14 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-yellow-100 to-orange-100">
-      <h1 className="text-3xl font-bold text-purple-600 text-center pt-6">
+        <h1 className="text-2xl font-bold text-purple-600 text-center pt-3">
+
         बाराखडी
       </h1>
 
       {selectedVowel ? (
-        <div className="text-center mt-4 px-6">
-          <p className="text-6xl mb-2">{selectedVowel.letter}</p>
+        <div className="text-center mt-2 px-6">
+          <p className="text-5xl mb-1">{selectedVowel.letter}</p>
           <TracingCanvas vowel={selectedVowel} />
           <div className="flex justify-center gap-3 mt-4">
             <button
