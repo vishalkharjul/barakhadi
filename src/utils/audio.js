@@ -1,9 +1,12 @@
-export function playVowelSound(letter) {
-  window.speechSynthesis.cancel();
+const audioCache = {};  // like a Python dict: { "a": AudioObject, "aa": AudioObject, ... }
 
-  const utterance = new SpeechSynthesisUtterance(letter);
-  utterance.lang = 'mr-IN';
-  utterance.rate = 0.8;
-
-  window.speechSynthesis.speak(utterance);
+export function playVowelSound(name) {
+  // Check cache first (just like checking a dict)
+  if (!audioCache[name]) {
+    audioCache[name] = new Audio(`/audio/${name}.mp3`);
+  }
+  
+  const audio = audioCache[name];
+  audio.currentTime = 0;  // rewind to start (in case it's still playing)
+  audio.play();
 }

@@ -13,20 +13,20 @@ function App() {
  const handleSelect = (vowel) => {
     const index = vowels.findIndex((v) => v.id === vowel.id);
     setSelectedIndex(index);
-    playVowelSound(vowel.letter);
+    playVowelSound(vowel.name);
   };
 
   const handlePrev = () => {
     if (selectedIndex > 0) {
       setSelectedIndex(selectedIndex - 1);
-      playVowelSound(vowels[selectedIndex - 1].letter);
+      playVowelSound(vowels[selectedIndex - 1].name);
     }
   };
 
  const handleNext = () => {
     if (selectedIndex < vowels.length - 1) {
       setSelectedIndex(selectedIndex + 1);
-      playVowelSound(vowels[selectedIndex + 1].letter);
+      playVowelSound(vowels[selectedIndex + 1].name);
     }
   };
 
