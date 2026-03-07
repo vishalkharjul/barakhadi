@@ -2,23 +2,32 @@ import { useState } from 'react';
 import VowelGrid from './components/VowelGrid';
 import TracingCanvas from './components/TracingCanvas';
 import vowels from './data/vowels';
+import { playVowelSound } from './utils/audio';
+
 
 function App() {
   const [selectedIndex, setSelectedIndex] = useState(null);
 
   const selectedVowel = selectedIndex !== null ? vowels[selectedIndex] : null;
 
-  const handleSelect = (vowel) => {
+ const handleSelect = (vowel) => {
     const index = vowels.findIndex((v) => v.id === vowel.id);
     setSelectedIndex(index);
+    playVowelSound(vowel.letter);
   };
 
   const handlePrev = () => {
-    if (selectedIndex > 0) setSelectedIndex(selectedIndex - 1);
+    if (selectedIndex > 0) {
+      setSelectedIndex(selectedIndex - 1);
+      playVowelSound(vowels[selectedIndex - 1].letter);
+    }
   };
 
-  const handleNext = () => {
-    if (selectedIndex < vowels.length - 1) setSelectedIndex(selectedIndex + 1);
+ const handleNext = () => {
+    if (selectedIndex < vowels.length - 1) {
+      setSelectedIndex(selectedIndex + 1);
+      playVowelSound(vowels[selectedIndex + 1].letter);
+    }
   };
 
   return (
