@@ -8,5 +8,5 @@ export function playVowelSound(name) {
   
   const audio = audioCache[name];
   audio.currentTime = 0;  // rewind to start (in case it's still playing)
-  audio.play();
+  audio.play().catch(() => {});
 }

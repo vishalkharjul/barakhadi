@@ -1,5 +1,9 @@
 import { useRef, useEffect, useState } from 'react';
 import { getVowelPath } from '../utils/fontLoader';
+import confetti from 'canvas-confetti';
+
+
+
 
 
 function TracingCanvas({ vowel }) {
@@ -7,6 +11,9 @@ function TracingCanvas({ vowel }) {
   const [isDrawing, setIsDrawing] = useState(false);
   const guidePathRef = useRef(null);
   const strokeWidthRef = useRef(8);
+  const lastPosRef = useRef(null);       // stores last finger position
+  const totalDistanceRef = useRef(0);     // running total like an odometer
+
 
 
   const drawGuide = (ctx) => {
@@ -41,6 +48,9 @@ function TracingCanvas({ vowel }) {
       drawGuide(ctx);
 
     }
+    totalDistanceRef.current = 0;
+    lastPosRef.current = null;
+
     setup();
   }, [vowel]);
 
@@ -75,17 +85,27 @@ function TracingCanvas({ vowel }) {
     ctx.setLineDash([]);
     ctx.beginPath();
     ctx.moveTo(pos.x, pos.y);
+    lastPosRef.current = pos;
     setIsDrawing(true);
   };
 
 
-  const draw = (e) => {
-    if (!isDrawing) return;
-    const ctx = canvasRef.current.getContext('2d');
-    const pos = getPosition(e);
-    ctx.lineTo(pos.x, pos.y);
-    ctx.stroke();
-  };
+const draw = (e) => {
+  if (!isDrawing) return;
+  const ctx = canvasRef.current.getContext('2d');
+  const pos = getPosition(e);
+
+  if (lastPosRef.current) {
+    const dx = pos.x - lastPosRef.current.x;
+    const dy = pos.y - lastPosRef.current.y;
+    totalDistanceRef.current += Math.sqrt(dx * dx + dy * dy);
+  }
+  lastPosRef.current = pos;
+
+  ctx.lineTo(pos.x, pos.y);
+  ctx.stroke();
+};
+
 
   const stopDrawing = () => {
     if (isDrawing) {
@@ -101,8 +121,29 @@ function TracingCanvas({ vowel }) {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawGuide(ctx);
+    totalDistanceRef.current = 0;
+    lastPosRef.current = null;
+
 
   };
+
+  const handleDone = () => {
+    const canvas = canvasRef.current;
+    const threshold = canvas.width * 1.0;
+    
+
+    if (totalDistanceRef.current < threshold) {
+      return;  // not enough tracing, do nothing
+    }
+
+    confetti({
+      particleCount: 250,
+      spread: 80,
+      origin: { y: 0.6 },
+    });
+  };
+
+
 
   return (
     <div className="relative">
@@ -120,13 +161,23 @@ function TracingCanvas({ vowel }) {
           className="rounded-xl touch-none block"
         />
       </div>
-      <button
-        onClick={handleClear}
-        className="mt-3 bg-red-400 text-white px-5 py-2 rounded-xl text-base
-                   active:scale-95 transition-all"
-      >
-        Clear
-      </button>
+      <div className="flex justify-center gap-3 mt-3">
+        <button
+          onClick={handleClear}
+          className="bg-red-400 text-white px-5 py-2 rounded-xl text-base
+                    active:scale-95 transition-all"
+        >
+          Clear
+        </button>
+        <button
+          onClick={handleDone}
+          className="bg-green-500 text-white px-5 py-2 rounded-xl text-base
+                    active:scale-95 transition-all"
+        >
+          Done ✓
+        </button>
+      </div>
+
     </div>
   );
 
