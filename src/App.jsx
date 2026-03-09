@@ -3,6 +3,8 @@ import VowelGrid from './components/VowelGrid';
 import TracingCanvas from './components/TracingCanvas';
 import vowels from './data/vowels';
 import { playVowelSound } from './utils/audio';
+import { ChevronLeft, ChevronRight, Grid3x3 } from 'lucide-react';
+
 
 
 function App() {
@@ -49,14 +51,15 @@ function App() {
                          active:scale-95 transition-all
                          disabled:opacity-40 disabled:scale-100"
             >
-              ← Prev
+              <ChevronLeft size={24} />
             </button>
             <button
               onClick={() => setSelectedIndex(null)}
               className="bg-purple-500 text-white px-5 py-3 rounded-xl text-lg
                          active:scale-95 transition-all"
             >
-              Grid
+              <Grid3x3 size={24} />
+
             </button>
             <button
               onClick={handleNext}
@@ -65,7 +68,8 @@ function App() {
                          active:scale-95 transition-all
                          disabled:opacity-40 disabled:scale-100"
             >
-              Next →
+              <ChevronRight size={24} />
+
             </button>
           </div>
         </div>

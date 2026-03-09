@@ -1,6 +1,8 @@
 import { useRef, useEffect, useState } from 'react';
 import { getVowelPath } from '../utils/fontLoader';
 import confetti from 'canvas-confetti';
+import { Trash2, CircleCheck } from 'lucide-react';
+
 
 
 
@@ -167,14 +169,16 @@ const draw = (e) => {
           className="bg-red-400 text-white px-5 py-2 rounded-xl text-base
                     active:scale-95 transition-all"
         >
-          Clear
+          <Trash2 size={20} />
+
         </button>
         <button
           onClick={handleDone}
           className="bg-green-500 text-white px-5 py-2 rounded-xl text-base
                     active:scale-95 transition-all"
         >
-          Done ✓
+          <CircleCheck size={20} />
+
         </button>
       </div>
 
