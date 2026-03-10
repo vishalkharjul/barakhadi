@@ -17,6 +17,7 @@ function App() {
   const selectedVowel = selectedIndex !== null ? vowels[selectedIndex] : null;
 
  const handleSelect = (vowel) => {
+    window.scrollTo(0, 0);
     const index = vowels.findIndex((v) => v.id === vowel.id);
     setSelectedIndex(index);
     playVowelSound(vowel.name);
@@ -24,6 +25,7 @@ function App() {
   };
 
   const handlePrev = () => {
+    window.scrollTo(0, 0);
     if (selectedIndex > 0) {
       setSelectedIndex(selectedIndex - 1);
       playVowelSound(vowels[selectedIndex - 1].name);
@@ -32,6 +34,7 @@ function App() {
   };
 
  const handleNext = () => {
+    window.scrollTo(0, 0);
     if (selectedIndex < vowels.length - 1) {
       setSelectedIndex(selectedIndex + 1);
       playVowelSound(vowels[selectedIndex + 1].name);
@@ -41,21 +44,21 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-yellow-100 to-orange-100">
-        <h1 className="text-5xl font-bold text-purple-600 text-center pt-3 mb-2">
+        <h1 className="text-4xl font-bold text-purple-600 text-center pt-1 mb-0">
 
         बाराखडी
       </h1>
 
       {selectedVowel ? (
-          <div className="text-center mt-2 px-6">
+          <div className="text-center mt-0 px-6">
             <div className="flex justify-center">
-  <PikuCompanion mood={pikuMood} size={180} />
+  <PikuCompanion mood={pikuMood} size={150} />
 </div>
 
 
           <TracingCanvas vowel={selectedVowel} onMoodChange={setPikuMood} />
 
-          <div className="flex justify-center gap-3 mt-4">
+          <div className="flex justify-center gap-3 mt-2">
             <button
               onClick={handlePrev}
               disabled={selectedIndex === 0}
@@ -87,7 +90,7 @@ function App() {
         </div>
       ) : (
       <div className="flex flex-col items-center mt-2">
-        <PikuCompanion mood="wave" size={180} />
+        <PikuCompanion mood="wave" size={150} />
         <VowelGrid onSelect={handleSelect} />
       </div>
       )}

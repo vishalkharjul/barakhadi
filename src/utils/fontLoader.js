@@ -11,7 +11,7 @@ async function loadFont() {
 export async function getVowelPath(letter, canvasSize = 350) {
   const loadedFont = await loadFont();
 
-  const fontSize = canvasSize * 0.7;
+  const fontSize = canvasSize * 0.85;
   const path = loadedFont.getPath(letter, 0, 0, fontSize);
   const bbox = path.getBoundingBox();
 

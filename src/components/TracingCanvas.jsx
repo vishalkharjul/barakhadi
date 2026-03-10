@@ -37,7 +37,8 @@ function TracingCanvas({ vowel,onMoodChange }) {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const size = Math.min(window.innerWidth - 72, 350);
+    const size = Math.min(window.innerWidth - 120, 260);
+
     canvas.width = size;
     canvas.height = size;
 
@@ -153,7 +154,7 @@ const handleDone = () => {
 
   return (
     <div className="relative">
-      <div className="bg-white rounded-2xl shadow-lg p-3 mx-auto mt-4
+      <div className="bg-white rounded-2xl shadow-lg p-2 mx-auto mt-1
                       border-4 border-purple-200" style={{ width: 'fit-content' }}>
         <canvas
           ref={canvasRef}
@@ -167,7 +168,7 @@ const handleDone = () => {
           className="rounded-xl touch-none block"
         />
       </div>
-      <div className="flex justify-center gap-3 mt-3">
+      <div className="flex justify-center gap-3 mt-1">
         <button
           onClick={handleClear}
           className="bg-red-400 text-white px-5 py-2 rounded-xl text-base
