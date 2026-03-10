@@ -8,7 +8,7 @@ import { Trash2, CircleCheck } from 'lucide-react';
 
 
 
-function TracingCanvas({ vowel }) {
+function TracingCanvas({ vowel,onMoodChange }) {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const guidePathRef = useRef(null);
@@ -129,21 +129,25 @@ const draw = (e) => {
 
   };
 
-  const handleDone = () => {
-    const canvas = canvasRef.current;
-    const threshold = canvas.width * 1.0;
-    
+const handleDone = () => {
+  const canvas = canvasRef.current;
+  const threshold = canvas.width * 1.0;
 
-    if (totalDistanceRef.current < threshold) {
-      return;  // not enough tracing, do nothing
-    }
+  if (totalDistanceRef.current < threshold) {
+    onMoodChange('sad');
+    setTimeout(() => onMoodChange('watch'), 2000);
+    return;
+  }
 
-    confetti({
-      particleCount: 250,
-      spread: 80,
-      origin: { y: 0.6 },
-    });
-  };
+  onMoodChange('celebrate');
+  confetti({
+    particleCount: 250,
+    spread: 80,
+    origin: { y: 0.6 },
+  });
+  setTimeout(() => onMoodChange('watch'), 3000);
+};
+
 
 
 
