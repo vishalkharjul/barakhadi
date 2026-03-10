@@ -146,7 +146,7 @@ const handleDone = () => {
     spread: 80,
     origin: { y: 0.6 },
   });
-  setTimeout(() => onMoodChange('watch'), 3000);
+ 
 };
 
 
