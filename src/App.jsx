@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import VowelGrid from './components/VowelGrid';
 import TracingCanvas from './components/TracingCanvas';
 import vowels from './data/vowels';
@@ -10,22 +10,30 @@ function App() {
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [pikuMood, setPikuMood] = useState('wave');
   const [screen, setScreen] = useState('welcome');
+  const welcomeAudioRef = useRef(null);
+
 
   const selectedVowel = selectedIndex !== null ? vowels[selectedIndex] : null;
 
-  const handleStart = () => {
-    const audio = new Audio('/audio/piku_welcome.mp3');
-    audio.play().catch(() => {});
-    setScreen('grid');
-  };
+const handleStart = () => {
+  const audio = new Audio('/audio/piku_welcome.mp3');
+  welcomeAudioRef.current = audio;
+  audio.play().catch(() => {});
+  setScreen('grid');
+};
 
-  const handleSelect = (vowel) => {
-    window.scrollTo(0, 0);
-    const index = vowels.findIndex((v) => v.id === vowel.id);
-    setSelectedIndex(index);
-    playVowelSound(vowel.name);
-    setPikuMood('watch');
-  };
+
+const handleSelect = (vowel) => {
+  if (welcomeAudioRef.current) {
+    welcomeAudioRef.current.pause();
+  }
+  window.scrollTo(0, 0);
+  const index = vowels.findIndex((v) => v.id === vowel.id);
+  setSelectedIndex(index);
+  playVowelSound(vowel.name);
+  setPikuMood('watch');
+};
+
 
   const handlePrev = () => {
     window.scrollTo(0, 0);
