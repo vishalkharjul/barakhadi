@@ -15,6 +15,16 @@ function TracingCanvas({ vowel,onMoodChange }) {
   const strokeWidthRef = useRef(8);
   const lastPosRef = useRef(null);       // stores last finger position
   const totalDistanceRef = useRef(0);     // running total like an odometer
+  const celebrateAudioRef = useRef(null);
+
+  useEffect(() => {
+  return () => {
+    if (celebrateAudioRef.current) {
+      celebrateAudioRef.current.pause();
+    }
+  };
+}, []);
+
 
 
 
@@ -36,6 +46,9 @@ function TracingCanvas({ vowel,onMoodChange }) {
 
 
   useEffect(() => {
+    if (celebrateAudioRef.current) {
+      celebrateAudioRef.current.pause();
+    }
     const canvas = canvasRef.current;
     const size = Math.min(window.innerWidth - 120, 260);
 
@@ -126,6 +139,10 @@ const draw = (e) => {
     drawGuide(ctx);
     totalDistanceRef.current = 0;
     lastPosRef.current = null;
+    if (celebrateAudioRef.current) {
+      celebrateAudioRef.current.pause();
+    }
+
 
 
   };
@@ -146,6 +163,10 @@ const handleDone = () => {
     spread: 80,
     origin: { y: 0.6 },
   });
+const celebrateAudio = new Audio('/audio/piku_celebrate.mp3');
+celebrateAudioRef.current = celebrateAudio;
+celebrateAudio.play().catch(() => {});
+
  
 };
 
