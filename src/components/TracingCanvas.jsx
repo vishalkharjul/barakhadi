@@ -2,6 +2,8 @@ import { useRef, useEffect, useState } from 'react';
 import { getVowelPath } from '../utils/fontLoader';
 import confetti from 'canvas-confetti';
 import { Trash2, CircleCheck } from 'lucide-react';
+import strokeGuides from '../data/strokeGuides';
+
 
 
 
@@ -16,6 +18,8 @@ function TracingCanvas({ vowel,onMoodChange }) {
   const lastPosRef = useRef(null);       // stores last finger position
   const totalDistanceRef = useRef(0);     // running total like an odometer
   const celebrateAudioRef = useRef(null);
+  const hitCheckpointsRef = useRef(new Set());
+
 
   useEffect(() => {
   return () => {
@@ -55,17 +59,28 @@ function TracingCanvas({ vowel,onMoodChange }) {
     canvas.width = size;
     canvas.height = size;
 
-    async function setup() {
-      const { path, strokeWidth } = await getVowelPath(vowel.letter, size);
-      guidePathRef.current = path;
-      strokeWidthRef.current = strokeWidth;
+ async function setup() {
+  const { path, strokeWidth } = await getVowelPath(vowel.letter, size);
+  guidePathRef.current = path;
+  strokeWidthRef.current = strokeWidth;
 
-      const ctx = canvas.getContext('2d');
-      drawGuide(ctx);
+  const ctx = canvas.getContext('2d');
 
-    }
-    totalDistanceRef.current = 0;
-    lastPosRef.current = null;
+  // Load guide image
+  const img = new Image();
+  img.src = `/images/alphabets/${vowel.name}.png`;
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0, size, size);
+  };
+  img.onerror = () => {
+    // Fallback to dashed outline if no image exists
+    drawGuide(ctx);
+  };
+}
+totalDistanceRef.current = 0;
+lastPosRef.current = null;
+hitCheckpointsRef.current = new Set();
+
 
     setup();
   }, [vowel]);
@@ -92,11 +107,9 @@ function TracingCanvas({ vowel,onMoodChange }) {
     const pos = getPosition(e);
 
     ctx.save();
-    const clipPath = new Path2D(guidePathRef.current.toPathData());
-    ctx.clip(clipPath);
 
     ctx.lineCap = 'round';
-    ctx.lineWidth = strokeWidthRef.current;
+    ctx.lineWidth = 8;
     ctx.strokeStyle = '#7c3aed';
     ctx.setLineDash([]);
     ctx.beginPath();
@@ -110,6 +123,7 @@ const draw = (e) => {
   if (!isDrawing) return;
   const ctx = canvasRef.current.getContext('2d');
   const pos = getPosition(e);
+  const canvas = canvasRef.current;
 
   if (lastPosRef.current) {
     const dx = pos.x - lastPosRef.current.x;
@@ -118,9 +132,24 @@ const draw = (e) => {
   }
   lastPosRef.current = pos;
 
+  // Check if near any checkpoint
+  const guide = strokeGuides[vowel.name];
+  if (guide) {
+    const tolerance = canvas.width * 0.04;
+    guide.checkpoints.forEach((cp, index) => {
+      const cpX = cp.x * canvas.width;
+      const cpY = cp.y * canvas.height;
+      const dist = Math.sqrt((pos.x - cpX) ** 2 + (pos.y - cpY) ** 2);
+      if (dist < tolerance) {
+        hitCheckpointsRef.current.add(index);
+      }
+    });
+  }
+
   ctx.lineTo(pos.x, pos.y);
   ctx.stroke();
 };
+
 
 
   const stopDrawing = () => {
@@ -132,29 +161,52 @@ const draw = (e) => {
   };
 
 
-  const handleClear = () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+const handleClear = () => {
+  const canvas = canvasRef.current;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const img = new Image();
+  img.src = `/images/alphabets/${vowel.name}.png`;
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  };
+  img.onerror = () => {
     drawGuide(ctx);
-    totalDistanceRef.current = 0;
-    lastPosRef.current = null;
-    if (celebrateAudioRef.current) {
-      celebrateAudioRef.current.pause();
-    }
-
-
-
   };
 
-const handleDone = () => {
-  const canvas = canvasRef.current;
-  const threshold = canvas.width * 1.0;
+  totalDistanceRef.current = 0;
+  lastPosRef.current = null;
+  hitCheckpointsRef.current = new Set();
 
-  if (totalDistanceRef.current < threshold) {
-    onMoodChange('sad');
-    setTimeout(() => onMoodChange('watch'), 2000);
-    return;
+  if (celebrateAudioRef.current) {
+    celebrateAudioRef.current.pause();
+  }
+};
+
+
+const handleDone = () => {
+  const guide = strokeGuides[vowel.name];
+
+  if (guide) {
+    const totalCheckpoints = guide.checkpoints.length;
+    const hitCount = hitCheckpointsRef.current.size;
+    const coverage = hitCount / totalCheckpoints;
+
+    if (coverage < 1.0) {
+      onMoodChange('sad');
+      setTimeout(() => onMoodChange('watch'), 2000);
+      return;
+    }
+  } else {
+    // Fallback to distance check for vowels without guide data
+    const canvas = canvasRef.current;
+    const threshold = canvas.width * 1.0;
+    if (totalDistanceRef.current < threshold) {
+      onMoodChange('sad');
+      setTimeout(() => onMoodChange('watch'), 2000);
+      return;
+    }
   }
 
   onMoodChange('celebrate');
@@ -163,12 +215,11 @@ const handleDone = () => {
     spread: 80,
     origin: { y: 0.6 },
   });
-const celebrateAudio = new Audio('/audio/piku_celebrate.mp3');
-celebrateAudioRef.current = celebrateAudio;
-celebrateAudio.play().catch(() => {});
-
- 
+  const celebrateAudio = new Audio('/audio/piku_celebrate.mp3');
+  celebrateAudioRef.current = celebrateAudio;
+  celebrateAudio.play().catch(() => {});
 };
+
 
 
 
