@@ -70,7 +70,9 @@ function TracingCanvas({ vowel,onMoodChange }) {
   const img = new Image();
   img.src = `/images/alphabets/${vowel.name}.png`;
   img.onload = () => {
-    ctx.drawImage(img, 0, 0, size, size);
+    const padding = size * 0.15;
+ctx.drawImage(img, -padding, -padding, size + padding * 2, size + padding * 2);
+
   };
   img.onerror = () => {
     // Fallback to dashed outline if no image exists
@@ -169,7 +171,9 @@ const handleClear = () => {
   const img = new Image();
   img.src = `/images/alphabets/${vowel.name}.png`;
   img.onload = () => {
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const padding = canvas.width * 0.15;
+ctx.drawImage(img, -padding, -padding, canvas.width + padding * 2, canvas.height + padding * 2);
+
   };
   img.onerror = () => {
     drawGuide(ctx);
